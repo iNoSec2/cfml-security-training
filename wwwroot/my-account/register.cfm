@@ -5,6 +5,7 @@
 <cffile action="upload" 
 			accept="image/jpg,image/png,image/jpeg" 
 			filefield="photo" 
+			
 			strict="false"
 			destination="#ExpandPath("./photos/")#" 
 			nameconflict="overwrite">
@@ -15,6 +16,8 @@
 	<cfset fileDelete(cffile.serverDirectory & "/" & cffile.serverFile)>
 	<cfthrow message="Sorry invalid file extension!">
 </cfif>
+
+allowedExtensions=".jpg,.png,.jpeg"
 --->
 
 <h1>Thanks!</h1>

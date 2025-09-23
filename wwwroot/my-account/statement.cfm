@@ -1,4 +1,4 @@
-<cfparam name="url.id" default="">
+<cfparam name="url.id" default="1">
 <cfparam name="url.month" default="#monthAsString(month(now()))#">
 <cfparam name="url.year" default="#year(now())#">
 <cfquery name="user">
