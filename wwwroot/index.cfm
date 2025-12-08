@@ -100,17 +100,45 @@
 			<cfset usedMemory = totalMemory-freeMemory>
 			<cfset percentUsed = Round( (usedMemory/totalMemory) * 100 )>
 			<div class="progress" style="min-height:24px;">
-  					<div class="progress-bar <cfif percentUsed GT 80>progress-bar-warning><cfelse>progress-bar-success</cfif>" role="progressbar" aria-valuenow="#int(percentUsed)#" aria-valuemin="0" aria-valuemax="100" style="min-width: 4em;width:#int(percentUsed)#%;">
-  						#int(percentUsed)#%
-    				</div>
-    				
+				<div class="progress-bar <cfif percentUsed GT 80>progress-bar-warning><cfelse>progress-bar-success</cfif>" role="progressbar" aria-valuenow="#int(percentUsed)#" aria-valuemin="0" aria-valuemax="100" style="min-width: 4em;width:#int(percentUsed)#%;">
+					#int(percentUsed)#%
+				</div>
     		</div>
     		#int(usedMemory)#mb in use of #int(totalMemory)#mb allocated (max: #int(maxMemory)#mb)
-  </div>
-</div>
-
 		</td>
 	</tr>
-
+	<tr>
+		<td>AI:</td>
+		<td>
+			<cftry>
+				<cfhttp url="#request.ai_ollama_base_url#/api/tags" timeout="2" result="ai_result" method="GET" throwonerror="true"></cfhttp>
+				<cfif isJSON(ai_result.fileContent) AND ai_result.statuscode contains "200">
+					<cfset ai_tags = deserializeJSON(ai_result.fileContent)>
+					<cfset model_names = []>
+					<cfif ai_tags.keyExists("models")>
+						<cfloop array="#ai_tags.models#" index="model">
+							<cfif model.keyExists("model")>
+								<cfset arrayAppend(model_names, model.model)>
+							</cfif>
+						</cfloop>
+					</cfif>
+					<cfif arrayLen(model_names)>
+						<div class="alert alert-success">
+							Ollama is Running
+						</div>
+						<p>Models: <cfloop array="#model_names#" index="model"><span class="label label-default m-4">#encodeForHTML(model)#</span> </cfloop></p>
+					<cfelse>
+						<div class="alert alert-warning">No models have been pulled</div>
+					</cfif>
+				<cfelse>
+					<cfthrow message="Non JSON Result or invalid status: #ai_result.statuscode#">
+				</cfif>
+				<cfcatch type="any">
+					<div class="alert alert-warning">Warning: Unable to reach Ollama API: <cfoutput>#encodeForHTML(cfcatch.message)#</cfoutput></div>
+					<p>Install ollama, and pull <code>llama3.1</code> if you wish to test AI features. Not required, feel free to skip this.</p>
+				</cfcatch>
+			</cftry>
+		</td>
+	</tr>
 </table>
 </cfoutput>

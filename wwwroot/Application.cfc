@@ -73,6 +73,7 @@ component {
 			local.ip = (url.keyExists("test_ip")) ? url.test_ip : cgi.remote_addr;
 			server.fuseguard.processRequest(ip_address=local.ip);
 		}
+		request.ai_ollama_base_url = "http://localhost:11434";
 	}
 
 	public function onRequest(string targetPage) {

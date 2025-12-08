@@ -14,6 +14,20 @@
             Debts: #getUserDebts()#
         </cfsavecontent>
     </cfoutput>
+    <!---
+    <cfset guardrail = aiChat(
+            systemPrompt=fileRead(expandPath("./loan-guardrails.md")),
+            userMessage=prompt,
+            model="gpt-oss-safeguard")>--->
+    <!---
+    <cfset guardrail = aiChat(
+            userMessage=prompt,
+            model="llama-guard3:1b")>
+    
+    <h3>Guardrail Result</h3>
+    <cfoutput>#encodeForHTML(guardrail.result)#</cfoutput>
+    
+    --->
     <cfset result = aiChat(systemPrompt=system_prompt, userMessage=prompt)>
     <hr>
     <h3>Application Result</h3>
@@ -25,24 +39,23 @@
 
     <!---<cfdump var="#result#">--->
     <cfscript>
-    public function aiChat(systemPrompt, userMessage, format={}) {    
-        var apiUrl = "http://localhost:11434/api/chat";
-        var model = "llama3.1";
+    public function aiChat(systemPrompt="", userMessage="", model="llama3.1") {    
+        var apiUrl = "#request.ai_ollama_base_url#/api/chat";
         var rtn = {"success":false, "result":""};
         var payload = {
             "messages": [
-                { "role": "system", "content": trim(arguments.systemPrompt) },
                 { "role": "user", "content": trim(arguments.userMessage) }
             ],
-            "model": model,
+            "model": arguments.model,
             "stream": false
         };
-        if (!structIsEmpty(arguments.format)) {
-            payload["format"] = arguments.format;
+        if (len(arguments.systemPrompt)) {
+            arrayPrepend(payload.messages, { "role": "system", "content": trim(arguments.systemPrompt) });
         }
+        
         rtn["payload"] = payload;
         var httpResult = "";
-        cfhttp(url=apiUrl, method="POST", result="httpResult", timeout=20) {
+        cfhttp(url=apiUrl, method="POST", result="httpResult", timeout=40) {
             cfhttpparam(type="header", name="Content-Type", value="application/json");
             cfhttpparam(type="body", value="#serializeJSON(payload)#");
         }
@@ -61,7 +74,7 @@
                 }
             }
         } else {
-            throw(message="Result was not json, status: #httpResult.status_code#", detail=httpResult.fileContent);
+            throw(message="Result was not json, status: #httpResult.statuscode#", detail=httpResult.fileContent);
         }
         
         return rtn;
@@ -82,9 +95,8 @@
 <cfelse>
     <h2>Loan Application</h2>
     <form method="POST">
-        <div class="row">
-            <div class="col-md-9"><input type="text" name="loan_amount" placeholder="Loan Amount" value="" class="form-control"></div>
-            <div class="col-md-3"><button type="submit" class="btn btn-success">Request Loan</button></div>
-        </div>
+        <textarea name="loan_amount" placeholder="Loan Amount" value="" class="form-control"></textarea>
+        <br>
+        <button type="submit" class="btn btn-success">Request Loan</button>
     </form>
 </cfif>
