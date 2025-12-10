@@ -1,5 +1,5 @@
 component {
-	this.name = "BankOfInsecuityApp3";
+	this.name = "BankOfInsecurityApp3";
 	this.sessionManagement = true;
 	this.scriptProtect = "none";
 	this.compileExtForInclude = "*";
@@ -55,6 +55,8 @@ component {
 			driver: "other"
 	};
 
+	//this.enableCspNonceForScript = true;
+	
 
 
 	public void function onApplicationStart() {
@@ -74,6 +76,7 @@ component {
 			server.fuseguard.processRequest(ip_address=local.ip);
 		}
 		request.ai_ollama_base_url = "http://localhost:11434";
+		//cfheader(name="Content-Security-Policy", value="default-src 'none';script-src 'nonce-#getCSPNonce()#;");
 	}
 
 	public function onRequest(string targetPage) {

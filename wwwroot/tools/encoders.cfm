@@ -31,7 +31,7 @@
         <cfoutput>
         <tr>
             <td>#variables.index# : #chr(variables.index)#</td>
-            <td class="success">#replace(htmlEditFormat(chr(variables.index)), "&", "&amp;")#</td>
+            <td class="success"><cfif structKeyExists(getFunctionList(), "htmlEditFormat")>#replace(htmlEditFormat(chr(variables.index)), "&", "&amp;")#<cfelse><em>N/A</em></cfif></td>
             <td class="success">#replace(encodeForHTML(chr(variables.index)), "&", "&amp;")#</td>
             <td class="success">#replace(encodeForHTMLAttribute(chr(variables.index)), "&", "&amp;")#</td>
             <td class="warning">#replace(xmlFormat(chr(variables.index)), "&", "&amp;")#</td>

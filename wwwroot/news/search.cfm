@@ -11,7 +11,7 @@
 	</div>
 <cfelse>
 	<div id="search_alert" class="alert alert-success">
-		Sorry your search for <strong><cfoutput>#url.search#</cfoutput></strong> yeilded <cfoutput>#news.recordcount#</cfoutput> <cfif news.recordcount EQ 1>story<cfelse>stories.</cfif>
+		Sorry your search for <strong><cfoutput>#url.search#</cfoutput></strong> yielded <cfoutput>#news.recordcount#</cfoutput> <cfif news.recordcount EQ 1>story<cfelse>stories.</cfif>
 	</div>
 	<cfoutput query="news">
 		<div class="panel panel-default">
